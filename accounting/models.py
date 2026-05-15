@@ -9,6 +9,21 @@ class Branch(models.Model):
 class Warehouse(models.Model):
     code = models.CharField(max_length=50, unique=True, verbose_name="Mã kho")
     name = models.CharField(max_length=255, verbose_name="Tên kho")
+    business_unit = models.ForeignKey(
+        "BusinessUnit",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='warehouses',
+        verbose_name="Đơn vị kinh doanh sở hữu"
+    )
+
+    # Các trường dữ liệu lưu trữ
+    inventory_value_plan = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho (Kế hoạch)")
+    inventory_value_actual = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho (Thực tế)")
+    inventory_opening_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho đầu kỳ")
+    inventory_in_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị nhập kho trong kỳ")
+    inventory_out_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị xuất kho trong kỳ")
     
     def __str__(self):
         return f"{self.code} - {self.name}"
@@ -25,6 +40,13 @@ class Customer(models.Model):
     name = models.CharField(max_length=255, verbose_name="Tên khách hàng")
     group = models.ForeignKey(CustomerGroup, on_delete=models.SET_NULL, null=True, blank=True)
     address = models.TextField(verbose_name="Địa điểm giao hàng")
+    business_unit = models.ForeignKey(
+        "BusinessUnit", 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        verbose_name="Đơn vị kinh doanh quản lý"
+    )
 
     has_revenue = models.BooleanField(
         default=True,
@@ -241,6 +263,8 @@ class InventorySummary(models.Model):
     ext_field1 = models.CharField(max_length=255, null=True, blank=True, verbose_name="Trường mở rộng 1")
     ext_field2 = models.CharField(max_length=255, null=True, blank=True, verbose_name="Trường mở rộng 2")
 
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Ngày tạo")
+
     class Meta:
         verbose_name = "Tổng hợp tồn kho"
         verbose_name_plural = "Bảng tổng hợp tồn kho"
@@ -301,6 +325,9 @@ class BUPerformance(models.Model):
     # 3. Giá trị tồn kho
     inventory_value_plan = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho (Kế hoạch)")
     inventory_value_actual = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho (Thực tế)")
+    inventory_opening_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị tồn kho đầu kỳ")
+    inventory_in_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị nhập kho trong kỳ")
+    inventory_out_value = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Giá trị xuất kho trong kỳ")
 
     # 4. Nợ ngân hàng
     bank_debt_plan = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Nợ ngân hàng (Kế hoạch)")
@@ -313,6 +340,12 @@ class BUPerformance(models.Model):
     # 6. Tiền cuối kỳ
     cash_balance_plan = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Tiền cuối kỳ (Kế hoạch)")
     cash_balance_actual = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Tiền cuối kỳ (Thực tế)")
+
+    # 7. QUẢN TRỊ THU NỢ & DÒNG TIỀN ---
+    collection_due_actual = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Đã thu (đến hạn)")
+    collection_in_term_cod = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Thu trong hạn + COD")
+    receivable_total = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Dư nợ cần thu")
+    receivable_overdue = models.DecimalField(max_digits=18, decimal_places=2, default=0, verbose_name="Nợ quá hạn")
 
     class Meta:
         verbose_name = "Chỉ số hiệu suất BU"

@@ -2,7 +2,7 @@ from accounting.tasks import update_single_bu_performance
 from rest_framework import viewsets, generics
 import pandas as pd
 from .models import (
-    Branch, Warehouse, Customer, Employee,
+    Branch, Warehouse, Customer, Employee, InventorySummary,
     Product, BusinessUnit, SalesTransaction, Supplier, SupplierDebt, SupplierGroup
 )
 from .serializers import *
@@ -74,6 +74,10 @@ class SupplierGroupViewSet(viewsets.ModelViewSet):
 class SupplierDebtViewSet(viewsets.ModelViewSet):
     queryset = SupplierDebt.objects.all()
     serializer_class = SupplierDebtSerializer
+
+class InventorySummaryViewSet(viewsets.ModelViewSet):
+    queryset = InventorySummary.objects.all()
+    serializer_class = InventorySummarySerializer
 
 class AccountDetailViewSet(viewsets.ModelViewSet):
     queryset = AccountDetail.objects.all().order_by('-id')

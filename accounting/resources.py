@@ -396,10 +396,24 @@ class InventorySummaryResource(resources.ModelResource):
     )
     
     # Mapping các cột số liệu (Sau khi đã xử lý tiêu đề tầng 2)
+    # opening_quantity = fields.Field(attribute='opening_quantity', column_name='Đầu kỳ_Số lượng', widget=DecimalWidget())
+    # opening_value = fields.Field(attribute='opening_value', column_name='Đầu kỳ_Giá trị', widget=DecimalWidget())
+    # in_quantity = fields.Field(attribute='in_quantity', column_name='Nhập kho_SL mua hàng', widget=DecimalWidget())
+    # in_value = fields.Field(attribute='in_value', column_name='Nhập kho_Giá trị mua hàng', widget=DecimalWidget())
+    # closing_quantity = fields.Field(attribute='closing_quantity', column_name='Cuối kỳ_Số lượng', widget=DecimalWidget())
+    # closing_value = fields.Field(attribute='closing_value', column_name='Cuối kỳ_Giá trị', widget=DecimalWidget())
+    # --- SỬA LẠI Ở ĐÂY ĐỂ KHỚP VỚI FILE EXCEL ---
     opening_quantity = fields.Field(attribute='opening_quantity', column_name='Đầu kỳ_Số lượng', widget=DecimalWidget())
     opening_value = fields.Field(attribute='opening_value', column_name='Đầu kỳ_Giá trị', widget=DecimalWidget())
-    in_quantity = fields.Field(attribute='in_quantity', column_name='Nhập kho_SL mua hàng', widget=DecimalWidget())
-    in_value = fields.Field(attribute='in_value', column_name='Nhập kho_Giá trị mua hàng', widget=DecimalWidget())
+    
+    # File của bạn để là "Số lượng"/"Giá trị" chứ không phải "SL mua hàng"
+    in_quantity = fields.Field(attribute='in_quantity', column_name='Nhập kho_Số lượng', widget=DecimalWidget())
+    in_value = fields.Field(attribute='in_value', column_name='Nhập kho_Giá trị', widget=DecimalWidget())
+    
+    # Tương tự cho các cột xuất (nếu cần)
+    out_quantity = fields.Field(attribute='out_quantity', column_name='Xuất kho_Số lượng', widget=DecimalWidget())
+    out_value = fields.Field(attribute='out_value', column_name='Xuất kho_Giá trị', widget=DecimalWidget())
+
     closing_quantity = fields.Field(attribute='closing_quantity', column_name='Cuối kỳ_Số lượng', widget=DecimalWidget())
     closing_value = fields.Field(attribute='closing_value', column_name='Cuối kỳ_Giá trị', widget=DecimalWidget())
 

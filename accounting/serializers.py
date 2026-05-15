@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    BUPerformance, BUPerformanceDaily, Branch, PurchaseDetail, Warehouse, Customer, Employee,
+    BUPerformance, BUPerformanceDaily, Branch, PurchaseDetail, Warehouse, Customer, Employee, InventorySummary,
     Product, BusinessUnit, SalesTransaction, Supplier, SupplierDebt, SupplierGroup, AccountDetail, ReceivablesAgeing
 )
 
@@ -136,3 +136,9 @@ class PerformanceUpdateSerializer(serializers.Serializer):
     month = serializers.IntegerField(min_value=1, max_value=12, required=False)
     year = serializers.IntegerField(min_value=2000, required=False)
     target_date = serializers.DateField(required=False, format="%Y-%m-%d")
+
+
+class InventorySummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InventorySummary
+        fields = '__all__'

@@ -6,7 +6,7 @@ from .models import (
     AccountDetail, ReceivablesAgeing, InventorySummary
 )
 from .resources import PurchaseDetailResource, SalesTransactionResource, SupplierDebtResource, AccountDetailResource, ReceivablesAgeingResource, InventorySummaryResource
-from .tasks import update_single_bu_performance
+from .tasks import update_single_bu_performance, sync_warehouse_inventory_data
 from django.contrib import admin, messages
 from datetime import datetime
 import calendar
@@ -57,7 +57,7 @@ class SalesTransactionAdmin(ImportExportModelAdmin):
 
 # Đăng ký các bảng danh mục còn lại một cách nhanh chóng
 @admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
+class CustomerAdmin(ImportExportModelAdmin):
     list_display = ('code', 'name')
     search_fields = ('code', 'name')
 
@@ -67,7 +67,45 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('code', 'name')
 
 admin.site.register(Branch)
-admin.site.register(Warehouse)
+@admin.register(Warehouse)
+class WarehouseAdmin(admin.ModelAdmin):
+    list_display = (
+        'code', 'name', 'business_unit', 
+        'inventory_opening_value', 'inventory_in_value', 
+        'inventory_out_value', 'inventory_value_actual'
+    )
+    list_filter = ('business_unit',)
+    actions = ['trigger_sync_inventory']
+
+    @admin.action(description='🔄 Đồng bộ tồn kho từ Inventory Summary')
+    def trigger_sync_inventory(self, request, queryset):
+        # queryset chứa các Warehouse được tích chọn
+        count = queryset.count()
+        
+        # Gọi hàm xử lý (có thể truyền queryset vào hàm hoặc xử lý tại đây)
+        for wh in queryset:
+            # Bạn có thể gọi trực tiếp logic tính toán cho từng kho
+            from django.db.models import Sum
+            from .models import InventorySummary
+            
+            data = InventorySummary.objects.filter(warehouse=wh).aggregate(
+                opening=Sum('opening_value'),
+                in_val=Sum('in_value'),
+                out_val=Sum('out_value'),
+                closing=Sum('closing_value')
+            )
+            
+            wh.inventory_opening_value = data['opening'] or 0
+            wh.inventory_in_value = data['in_val'] or 0
+            wh.inventory_out_value = data['out_val'] or 0
+            wh.inventory_value_actual = data['closing'] or 0
+            wh.save()
+
+        self.message_user(
+            request, 
+            f"Đã cập nhật dữ liệu tồn kho thành công cho {count} kho.", 
+            messages.SUCCESS
+        )
 admin.site.register(Employee)
 
 class BUPerformanceDailyInline(admin.TabularInline):

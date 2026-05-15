@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-
+from celery.schedules import crontab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'corsheaders',
+    'django_celery_beat'
 ]
 
 
@@ -103,14 +104,7 @@ WSGI_APPLICATION = 'report2026.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -162,18 +156,10 @@ STATIC_URL = 'static/'
 
 
 # Cấu hình Celery
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-
-# Cấu hình lịch chạy định kỳ (Celery Beat)
-from celery.schedules import crontab
-
 CELERY_BEAT_SCHEDULE = {
-    'update-performance-daily-at-midnight': {
-        'task': 'accounting.tasks.update_single_bu_performance',
-        'schedule': crontab(hour=23, minute=50),
+    'auto_import_excel_daily': {
+        'task': 'accounting.tasks.auto_import_excel_from_folder',
+        'schedule': crontab(hour=1, minute=0),
     },
 }
 

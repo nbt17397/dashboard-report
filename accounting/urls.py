@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    BUPerformanceUpdateAPIView, BranchViewSet, WarehouseViewSet, CustomerViewSet, 
+    BUPerformanceUpdateAPIView, BranchViewSet, InventorySummaryViewSet, WarehouseViewSet, CustomerViewSet, 
     EmployeeViewSet, ProductViewSet, BusinessUnitViewSet,
     SalesTransactionViewSet, SupplierViewSet, SupplierDebtViewSet, SupplierGroupViewSet, AccountDetailViewSet, ReceivablesAgeingViewSet, PurchaseDetailViewSet
 )
@@ -23,6 +23,7 @@ router.register(r'supplier-debts', SupplierDebtViewSet)
 router.register(r'account-details', AccountDetailViewSet)
 router.register(r'receivables-ageing', ReceivablesAgeingViewSet)
 router.register(r'purchase-details', PurchaseDetailViewSet)
+router.register(r'inventory-summaries', InventorySummaryViewSet)
 
 # Danh sách URL của App
 urlpatterns = [
